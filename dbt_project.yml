@@ -1,4 +1,5 @@
 name: 'dbt_test_henri'
-version: 2
+
+version: '1.0.0'
 models:
   integral_reporting:
