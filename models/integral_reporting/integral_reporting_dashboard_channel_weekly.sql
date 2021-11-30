@@ -23,8 +23,8 @@ coalesce(ss.year, tvb.year) as year,
 sum(ss.streaming_playcount_over_30s_broadcastsonly) as n_views_in_reportingyear, 
 sum(tv_number_of_broadcasts) as n_broadcasts_in_year 
 from
-{{ ref('vodstreaming') }} ss
-full outer join {{ ref('tvbroadcasts') }}  tvb 
+{{ ref('integral_reporting_vodstreaming') }} ss
+full outer join {{ ref('integral_reporting_tvbroadcasts') }}  tvb 
 on tvb.poms_series_id = ss.poms_series_id 
 and tvb.year = ss.year and tvb.weeknr = ss.weeknr
 GROUP BY
@@ -67,7 +67,7 @@ null as video_kdh_per_week,
 null as video_kdh_per_release
 
 FROM basis
-LEFT JOIN {{ ref('facebook') }} as fb on basis.QL_FB_ID = fb.QL_FB_ID and basis.weekdate = fb.weekdate
+LEFT JOIN {{ ref('integral_reporting_facebook') }} as fb on basis.QL_FB_ID = fb.QL_FB_ID and basis.weekdate = fb.weekdate
 
 UNION ALL
 
@@ -96,7 +96,7 @@ null as video_kdh_per_week,
 null as video_kdh_per_release
 
 FROM basis
-LEFT JOIN {{ ref('instagram') }} as ig on basis.QL_IG_ID = ig.QL_IG_ID and basis.weekdate = ig.weekdate
+LEFT JOIN {{ ref('integral_reporting_instagram') }} as ig on basis.QL_IG_ID = ig.QL_IG_ID and basis.weekdate = ig.weekdate
 
 UNION ALL
 --note: we take sites and app from the same base view for now, as they were visualised seperatly..
@@ -125,7 +125,7 @@ null as video_kdh_per_week,
 null as video_kdh_per_release
 
 FROM basis
-LEFT JOIN {{ ref('sites_and_apps') }} as online on basis.ATI_Titel = online.ATI_Titel and basis.weekdate = online.weekdate
+LEFT JOIN {{ ref('integral_reporting_sites_and_apps') }} as online on basis.ATI_Titel = online.ATI_Titel and basis.weekdate = online.weekdate
 
 UNION ALL
 --note: we take sites and app from the same base view for now, as they were visualised seperatly..
@@ -154,7 +154,7 @@ null as video_kdh_per_week,
 null as video_kdh_per_release
 
 FROM basis
-LEFT JOIN {{ ref('sites_and_apps') }} as online on basis.ATI_Titel = online.ATI_Titel and basis.weekdate = online.weekdate
+LEFT JOIN {{ ref('integral_reporting_sites_and_apps') }} as online on basis.ATI_Titel = online.ATI_Titel and basis.weekdate = online.weekdate
 
 
 UNION ALL
@@ -183,7 +183,7 @@ round(yt.yt_time_spent_per_week_min / 60,2) as hours_watched,
 round(yt.yt_kdh_per_week,0) as video_kdh_per_week,
 null as video_kdh_per_release
 FROM basis
-LEFT JOIN {{ ref('youtube') }} as yt on basis.QL_YT_ID = yt.QL_YT_ID and basis.weekdate = yt.weekdate
+LEFT JOIN {{ ref('integral_reporting_youtube') }} as yt on basis.QL_YT_ID = yt.QL_YT_ID and basis.weekdate = yt.weekdate
 
 UNION ALL
 
@@ -212,7 +212,7 @@ round(tv.tv_sum_kdh_per_week,0) as video_kdh_per_week,
 round(tv.tv_sum_kdh_per_week / nullif(tv.tv_number_of_broadcasts,0),0) as video_kdh_per_release
 
 FROM
-{{ ref('tvbroadcasts') }} as tv
+{{ ref('integral_reporting_tvbroadcasts') }} as tv
 LEFT JOIN
   basis on basis.Serie_mid = tv.poms_series_id  and basis.weekdate = tv.weekdate
 
@@ -242,7 +242,7 @@ round(sum(stream.streaming_time_spent_sec / 60  / 60),2) as hours_watched,
 round(sum(stream.streaming_sum_kdh_per_week),0)  as video_kdh_per_week,
 round(sum(streaming_kdh_for_new_released_episode) / nullif(sum(streaming_number_of_new_released_eps),0),0) as video_kdh_per_release
 FROM  
-{{ ref('vodstreaming') }} as stream
+{{ ref('integral_reporting_vodstreaming') }} as stream
 inner join 
   intekening_cleaning scc on scc.POMS_series_id = stream.POMS_series_id and scc.year = stream.year
 left join 
