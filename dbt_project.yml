@@ -1,10 +1,5 @@
 name: 'npo_data_hub'
-<<<<<<< HEAD
 version: 2
 
-=======
-config-version: 2
-version: '0.0.1'
->>>>>>> 830a7973643b96ad95df2b3b95b2fa7de486efe3
 models:
   integral_reporting:
