@@ -1,5 +1,4 @@
-name: 'mit-reporting-test-1'
+name: 'dbt_test_henri'
 version: 2
-
 models:
   integral_reporting:
