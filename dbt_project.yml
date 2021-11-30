@@ -1,4 +1,4 @@
 name: 'npo_data_hub'
-version: '0.0.1'
+version: '1.0.0'
 models:
   integral_reporting:
