@@ -11,7 +11,7 @@ date_diff(endTimeCET, beginTimeCET, MINUTE) as ep_duration_min,
 MIN(DATE) over (partition by season_id) as first_known_eps_date_season,
 max(date) over (partition by season_id) as last_known_eps_date_season
 FROM
-{{ ref('advantedge_tv_viewer_density_per_show_daily') }} tveps
+{{ ref('advantedge_tv_viewer_density_per_show_daily_v1') }} tveps
 left join {{ ref('poms_flattened') }}  as poms_info on poms_info.mid = tveps.mediaId 
 WHERE regexp_contains(Channel, 'NPO') and RepeatType = 'FIRST' and audience = '6+' and universe = 'Nat[SKO]' and extract(isoyear from date) >= 2019 
 ),
@@ -29,7 +29,7 @@ evt_mid,
 evt_date, 
 SUM(evt_play_count_over_30s) as streaming_playcount_over_30s,
 FROM
-{{ ref('v4') }} stream_eps 
+{{ ref('atinternet_smarttag_streams_daily_v4') }} stream_eps 
 where mtd_type = 'BROADCAST'
 group by evt_mid, evt_date
 )
@@ -60,7 +60,7 @@ if(coalesce(first_broadcast_date, date(start_linear_first_broadcast)) is null,0,
 min(coalesce(first_broadcast_date, if(date_diff(date(start_linear_first_broadcast),first_stream_day,  day) >= 90, first_stream_day, date(start_linear_first_broadcast)))) over (partition by season_ref) as first_broadcast_season,
 max(coalesce(first_broadcast_date, if(date_diff(date(start_linear_first_broadcast),first_stream_day,  day) >= 90, first_stream_day, date(start_linear_first_broadcast)))) over (partition by season_ref) as last_known_broadcast_season,
 from
- {{ ref('lookerdimension_poms_episodes_materialized') }}  poms 
+ {{ ref('dim_poms_episodes') }}  poms 
 left join new_tv_eps nte on poms.episode_id = nte.mediaId
 left join first_streaming_days fsd on fsd.evt_mid = poms.episode_id
 where episode_type = 'BROADCAST'
@@ -92,9 +92,9 @@ max(case when has_had_linear_release = 0 and has_scheduled_lineair_release = 0 t
 
 
 FROM
-{{ ref('v4') }} stream_eps
+{{ ref('atinternet_smarttag_streams_daily_v4') }} stream_eps
 left join new_releases on new_releases.mediaId = stream_eps.evt_mid
-left join {{ ref('lookerdimension_poms_episodes_materialized') }}  poms on poms.episode_id = stream_eps.evt_mid
+left join {{ ref('dim_poms_episodes') }}  poms on poms.episode_id = stream_eps.evt_mid
 GROUP BY 1,2,3,4,5,6
 
 UNION ALL
@@ -119,8 +119,8 @@ null as has_had_linear_release,
 null as has_scheduled_lineair_release,
 null as vod_only_release
 FROM
-{{ ref('v4') }} stream_eps
-left join {{ ref('lookerdimension_poms_episodes_materialized') }} poms on poms.episode_id = stream_eps.evt_mid
+{{ ref('atinternet_smarttag_streams_daily_v4') }} stream_eps
+left join {{ ref('dim_poms_episodes') }} poms on poms.episode_id = stream_eps.evt_mid
 GROUP BY 1,2,3,4,5,6
 )
 

@@ -10,8 +10,8 @@ date_diff(min(endTimeCET), min(beginTimeCET), MINUTE) as ep_duration_min,
 sum(kdh) as kdh,
 date_diff(min(endTimeCET), min(beginTimeCET), MINUTE) * sum(kdh) as time_spent
 FROM
-{{ ref('advantedge_tv_viewer_density_per_show_daily') }} tvbroadcasts
-left join {{ ref('lookerdimension_poms_episodes_materialized') }}  poms on poms.episode_id = tvbroadcasts.mediaId 
+{{ ref('advantedge_tv_viewer_density_per_show_daily_v1') }} tvbroadcasts
+left join {{ ref('dim_poms_episodes') }}  poms on poms.episode_id = tvbroadcasts.mediaId 
 WHERE regexp_contains(Channel, 'NPO') and RepeatType = 'FIRST' and audience = '6+' and universe = 'Nat[SKO]' and extract(isoyear from date) >= 2019 
 GROUP BY 1,2,3,4,5,6
 ),
@@ -53,4 +53,4 @@ FROM
 left join 
   tv_title on EXTRACT(ISOWEEK FROM weekdate) = tv_title.weeknr and tv_title.year = EXTRACT(ISOYEAR FROM weekdate)
 left join
-  {{ ref('360_graden_rapportage_vertaaltabel_upload_20_21') }} as vertaal on vertaal.AdE_Titel = tv_title.Title
+  {{ ref('360_graden_rapportage_vertaaltabel_upload_20_21') }} as vertaal on vertaal.Serie_mid = tv_title.poms_series_id

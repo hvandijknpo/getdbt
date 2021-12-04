@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: quintly_youtube_allchannels_weekly
+    database: npo-data-hub
+    schema: quintly_youtube_allchannels_weekly
+    tables: 
+      - name: v1
