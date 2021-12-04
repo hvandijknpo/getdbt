@@ -33,7 +33,7 @@ WITH adv_events AS (
         title as adv_title,
         channel as adv_channel,
         mediaId as adv_mid,
-    FROM {{ ref('advantedge_tv_viewer_density_per_show_daily') }}
+    FROM {{ ref('advantedge_tv_viewer_density_per_show_daily_v1') }}
     INNER JOIN UNNEST(GENERATE_TIMESTAMP_ARRAY(TIMESTAMP(beginTimeCET), TIMESTAMP(endTimeCET), INTERVAL 1 MINUTE)) AS min_interval
     WHERE
         REGEXP_CONTAINS(channel, "NPO")
@@ -66,7 +66,7 @@ SELECT
  --left join because we also report on non-matched-livestreams as they are a part of the total hours streamed. 
  --this may include commercials e.g.
 --NOTE: WE JOIN ON CET AS AT-INTERNET EVENTS ARE IN CET!
- inner JOIN {{ ref('live_stream_name_mapping') }} as channel_mapping ON channel_mapping.channel_id = NULLIF(SPLIT(ati_events.d_rm_content, '_||_')[SAFE_OFFSET(1)], '')
+ inner JOIN {{ ref('live_stream_name_mapping_v1') }} as channel_mapping ON channel_mapping.channel_id = NULLIF(SPLIT(ati_events.d_rm_content, '_||_')[SAFE_OFFSET(1)], '')
  LEFT JOIN adv_events ON channel_mapping.channel = adv_events.adv_channel and TIMESTAMP_TRUNC(d_date_hour_event, MINUTE) = adv_minute
         -- Do not count animation events.
         WHERE d_rm_type <> 'Animations'
