@@ -2,4 +2,11 @@ name: 'dbt_test_henri'
 
 version: '1.0.0'
 models:
+  database: 'mit-reporting-test-1'
   integral_reporting:
+    database: 'mit-reporting-test-1'
+    schema: 'integral_reporting'
+  atinternet_smarttag_streams_daily:
+    database: 'mit-reporting-test-1'
+    schema: 'atinternet_smarttag_streams_daily'
+    

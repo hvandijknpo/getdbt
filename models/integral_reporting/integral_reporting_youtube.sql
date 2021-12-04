@@ -15,11 +15,11 @@ SELECT
   yt.averageViewDuration as yt_view_duration,
   (yt.averageViewPercentage/100) * yt.views as yt_kdh_per_week
 
-FROM `comscore-data-prod.ati.360_graden_rapportage_vertaaltabel_upload_20_21` as vertaaltabel
+FROM {{ ref('360_graden_rapportage_vertaaltabel_upload_20_21') }}  as vertaaltabel
 --create one row per week of interest per title
 LEFT JOIN UNNEST(GENERATE_DATE_ARRAY('2018-12-31', CURRENT_DATE(), INTERVAL 1 WEEK)) as weekdate
 --left join the youtube data to also get a record per week where there's no data/no broadcast
-LEFT JOIN `npo-data-hub.quintly_youtube_allchannels_weekly.v1_view` yt on
+LEFT JOIN {{ ref('quintly_youtube_allchannels_weekly') }} yt on
   vertaaltabel.QL_YT_ID = yt.profileId 
   AND EXTRACT(ISOYEAR FROM intervalBegin) = EXTRACT(ISOYEAR FROM weekdate)
   AND EXTRACT(ISOWEEK FROM intervalBegin) = EXTRACT(ISOWEEK FROM weekdate)

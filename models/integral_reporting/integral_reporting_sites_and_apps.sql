@@ -36,7 +36,7 @@ SELECT
   SUM(IF(ati.platform LIKE 'site', ati.daily_visitors, null)) site_daily_visitors,
   SUM(IF(ati.platform LIKE 'app', ati.visits, null)) app_visits,
   SUM(IF(ati.platform LIKE 'site', ati.visits, null)) site_visits
-FROM `comscore-data-prod.ati.360_graden_rapportage_vertaaltabel_upload_20_21` as vertaaltabel
+FROM {{ ref('360_graden_rapportage_vertaaltabel_upload_20_21') }}  as vertaaltabel
 --create one row per week of interest per title
 LEFT JOIN UNNEST(GENERATE_DATE_ARRAY('2018-12-31', CURRENT_DATE(), INTERVAL 1 WEEK)) as weekdate
 --left join the ati data to also get a record per week where there's no data/no broadcast

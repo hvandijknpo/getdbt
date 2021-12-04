@@ -1,0 +1,1 @@
+select * from `npo-data-hub.quintly_youtube_allchannels_weekly.v1_view`

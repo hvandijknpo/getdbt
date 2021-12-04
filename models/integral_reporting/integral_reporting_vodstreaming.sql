@@ -11,8 +11,8 @@ date_diff(endTimeCET, beginTimeCET, MINUTE) as ep_duration_min,
 MIN(DATE) over (partition by season_id) as first_known_eps_date_season,
 max(date) over (partition by season_id) as last_known_eps_date_season
 FROM
-`npo-publieksonderzoek-datamart.advantedge_tv_viewer_density_per_show_daily.v1` tveps
-left join `npo-data-hub.poms_flattened.v1` as poms_info on poms_info.mid = tveps.mediaId 
+{{ ref('advantedge_tv_viewer_density_per_show_daily') }} tveps
+left join {{ ref('poms_flattened') }}  as poms_info on poms_info.mid = tveps.mediaId 
 WHERE regexp_contains(Channel, 'NPO') and RepeatType = 'FIRST' and audience = '6+' and universe = 'Nat[SKO]' and extract(isoyear from date) >= 2019 
 ),
 
@@ -29,7 +29,7 @@ evt_mid,
 evt_date, 
 SUM(evt_play_count_over_30s) as streaming_playcount_over_30s,
 FROM
-`npo-publieksonderzoek-datamart.atinternet_smarttag_streams_daily.v3` stream_eps 
+{{ ref('v4') }} stream_eps 
 where mtd_type = 'BROADCAST'
 group by evt_mid, evt_date
 )
@@ -60,7 +60,7 @@ if(coalesce(first_broadcast_date, date(start_linear_first_broadcast)) is null,0,
 min(coalesce(first_broadcast_date, if(date_diff(date(start_linear_first_broadcast),first_stream_day,  day) >= 90, first_stream_day, date(start_linear_first_broadcast)))) over (partition by season_ref) as first_broadcast_season,
 max(coalesce(first_broadcast_date, if(date_diff(date(start_linear_first_broadcast),first_stream_day,  day) >= 90, first_stream_day, date(start_linear_first_broadcast)))) over (partition by season_ref) as last_known_broadcast_season,
 from
- `npo-data-hub.looker.poms_episodes_materialized` poms 
+ {{ ref('lookerdimension_poms_episodes_materialized') }}  poms 
 left join new_tv_eps nte on poms.episode_id = nte.mediaId
 left join first_streaming_days fsd on fsd.evt_mid = poms.episode_id
 where episode_type = 'BROADCAST'
@@ -92,9 +92,9 @@ max(case when has_had_linear_release = 0 and has_scheduled_lineair_release = 0 t
 
 
 FROM
-`npo-data-hub.atinternet_smarttag_streams_daily.v3` stream_eps
+{{ ref('v4') }} stream_eps
 left join new_releases on new_releases.mediaId = stream_eps.evt_mid
-left join `npo-data-hub.looker.poms_episodes_materialized` poms on poms.episode_id = stream_eps.evt_mid
+left join {{ ref('lookerdimension_poms_episodes_materialized') }}  poms on poms.episode_id = stream_eps.evt_mid
 GROUP BY 1,2,3,4,5,6
 
 UNION ALL
@@ -119,8 +119,8 @@ null as has_had_linear_release,
 null as has_scheduled_lineair_release,
 null as vod_only_release
 FROM
-`npo-publieksonderzoek-datamart.atinternet_smarttag_streams_daily.v3` stream_eps
-left join `npo-data-hub.looker.poms_episodes_materialized` poms on poms.episode_id = stream_eps.evt_mid
+{{ ref('v4') }} stream_eps
+left join {{ ref('lookerdimension_poms_episodes_materialized') }} poms on poms.episode_id = stream_eps.evt_mid
 GROUP BY 1,2,3,4,5,6
 )
 
@@ -150,7 +150,7 @@ UNNEST(GENERATE_DATE_ARRAY('2018-12-31', CURRENT_DATE(), INTERVAL 1 WEEK)) as we
 left join streaming_info str on evt_year = EXTRACT(ISOYEAR FROM weekdate)
   AND evt_weeknr = EXTRACT(ISOWEEK FROM weekdate)
 
-LEFT JOIN `comscore-data-prod.ati.360_graden_rapportage_vertaaltabel_upload_20_21` as vertaaltabel on
+LEFT JOIN {{ ref('360_graden_rapportage_vertaaltabel_upload_20_21') }} as vertaaltabel on
   vertaaltabel.Serie_mid = str.series_ref
 
 

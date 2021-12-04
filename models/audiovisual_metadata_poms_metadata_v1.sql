@@ -1,0 +1,1 @@
+select * from `npo-data-hub.audiovisual_metadata_v1.poms_metadata_v1`

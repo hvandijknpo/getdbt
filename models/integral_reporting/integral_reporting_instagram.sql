@@ -12,11 +12,11 @@ SELECT
   ig.reach as ig_reach_per_week,
   ig.totalengagement as ig_engagement_per_week
 
-FROM `comscore-data-prod.ati.360_graden_rapportage_vertaaltabel_upload_20_21` as vertaaltabel
+FROM {{ ref('360_graden_rapportage_vertaaltabel_upload_20_21') }}  as vertaaltabel
 --create one row per week of interest per title
 LEFT JOIN UNNEST(GENERATE_DATE_ARRAY('2018-12-31', CURRENT_DATE(), INTERVAL 1 WEEK)) as weekdate
 --left join the youtube data to also get a record per week where there's no data/no broadcast
-LEFT JOIN `npo-publieksonderzoek-datamart.quintly_instagram_pages_weekly.v1` ig on
+LEFT JOIN {{ ref('quintly_instagram_pages_weekly') }} ig on
   vertaaltabel.QL_IG_ID = ig.profileId 
   AND EXTRACT(ISOYEAR FROM intervalBegin) = EXTRACT(ISOYEAR FROM weekdate)
   AND EXTRACT(ISOWEEK FROM intervalBegin) = EXTRACT(ISOWEEK FROM weekdate)
