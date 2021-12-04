@@ -1,0 +1,1 @@
+select * from `npo-data-hub.analytics.media_events`

@@ -5,7 +5,7 @@ weekdate,
 extract(isoweek from weekdate) as weeknr,
 extract(isoyear from weekdate) as year
 FROM 
-`comscore-data-prod.ati.360_graden_rapportage_vertaaltabel_upload_20_21` as vertaal
+{{ ref('360_graden_rapportage_vertaaltabel_upload_20_21') }}  as vertaal
 --create one row per week of interest per title
 LEFT JOIN UNNEST(GENERATE_DATE_ARRAY('2018-12-31', CURRENT_DATE(), INTERVAL 1 WEEK)) as weekdate
 ),

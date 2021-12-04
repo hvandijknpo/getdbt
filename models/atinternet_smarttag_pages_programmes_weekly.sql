@@ -1,0 +1,1 @@
+select * from `npo-data-hub.atinternet_smarttag_pages_programmes_weekly.v2`
